@@ -331,9 +331,16 @@ html,body{
 }
 .fs-guide-step b{color:#fff;font-weight:600}
 .fs-guide-note{
-  color:rgba(255,255,255,.2);font-size:11px;text-align:center;
-  margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);
+  color:rgba(255,255,255,.3);font-size:12px;text-align:center;
+  margin:12px 0 14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);
+  line-height:1.6;
 }
+.fs-guide-btn{
+  width:100%;padding:12px;background:var(--accent);border:none;color:#fff;
+  font-size:15px;font-weight:600;border-radius:10px;cursor:pointer;
+  font-family:inherit;-webkit-tap-highlight-color:transparent;
+}
+.fs-guide-btn:active{filter:brightness(.85)}
 
 /* 隐藏元素 */
 #fileCover,#fileBg,#fileDisc{display:none}
@@ -501,19 +508,17 @@ var userImages={cover:null,bg:null,disc:null};
 // ===== 初始化 =====
 loadConfig(); applyConfig(); initParticles(); initWaveform();
 
-// ===== iOS Safari 地址栏隐藏技巧 =====
-// 让 body 略微超出视口，自动滚 1px 触 Safari 发隐藏地址栏
-(function(){
-  var html=document.documentElement;
-  html.style.minHeight=(window.innerHeight+1)+'px';
-  setTimeout(function(){window.scrollTo(0,1)},200);
-  // 用户点击时如果页面没滚动过，再触发一次
-  var scrolled=false;
-  window.addEventListener('scroll',function(){scrolled=true});
-  document.addEventListener('touchstart',function(){
-    if(!scrolled)setTimeout(function(){window.scrollTo(0,1)},50);
-  },{once:true});
-})();
+// ===== iOS: 检测是否从主屏幕打开（PWA 模式） =====
+var isPWA = window.matchMedia('(display-mode: standalone)').matches
+  || navigator.standalone
+  || document.referrer.indexOf('android-app://')===0;
+
+// 如果不是 PWA 模式，自动弹出添加到主屏幕引导
+if(!isPWA){
+  setTimeout(function(){
+    showFsGuide();
+  },1500);
+}
 
 // ===== 粒子 =====
 function initParticles(){
@@ -666,10 +671,16 @@ function showFsGuide(){
   if(!guide){
     guide=document.createElement('div');guide.id='fsGuide';
     guide.className='fs-guide';
-    guide.innerHTML='<div class="fs-guide-content"><div class="fs-guide-close" onclick="document.getElementById(\'fsGuide\').remove()">✕</div><div class="fs-guide-icon">📲</div><div class="fs-guide-title">全屏播放</div><div class="fs-guide-step"><span>1</span> 点底部中间 <b>分享</b> 按钮</div><div class="fs-guide-step"><span>2</span> 往下滑找到 <b>添加到主屏幕</b></div><div class="fs-guide-step"><span>3</span> 点右上角 <b>添加</b></div><div class="fs-guide-step"><span>4</span> 从主屏幕打开 = 真全屏 🎉</div><div class="fs-guide-note">添加一次，以后都全屏</div></div>';
+    guide.innerHTML='<div class="fs-guide-content"><div class="fs-guide-close" onclick="dismissFsGuide()">✕</div><div class="fs-guide-icon">📲</div><div class="fs-guide-title">添加到主屏幕 = 全屏</div><div class="fs-guide-step"><span>1</span> 点底部中间 <b>⇧ 分享</b> 图标</div><div class="fs-guide-step"><span>2</span> 往下滑找到 <b>「添加到主屏幕」</b></div><div class="fs-guide-step"><span>3</span> 点右上角 <b>「添加」</b></div><div class="fs-guide-step"><span>4</span> 🏠 从主屏幕图标打开</div><div class="fs-guide-note">✅ 从主屏幕打开 = 真全屏，无地址栏无工具栏<br>只加一次，以后都全屏，还能正常录屏</div><button class="fs-guide-btn" onclick="dismissFsGuide()">知道了，先这样用</button></div>';
     document.body.appendChild(guide);
   }
   setTimeout(function(){guide.style.opacity='1'},50);
+}
+
+function dismissFsGuide(){
+  var guide=document.getElementById('fsGuide');
+  if(guide)guide.style.opacity='0';
+  setTimeout(function(){if(guide)guide.remove()},300);
 }
 
 // ===== 录屏教程 =====
