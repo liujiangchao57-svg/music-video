@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-touch-fullscreen" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='96' fill='%230a0a12'/%3E%3Ccircle cx='96' cy='96' r='40' fill='none' stroke='%23e94560' stroke-width='2'/%3E%3Ccircle cx='96' cy='96' r='10' fill='%23e94560'/%3E%3Ctext x='96' y='165' text-anchor='middle' fill='%23e94560' font-family='sans-serif' font-size='16' font-weight='bold'%3EMV%3C/text%3E%3C/svg%3E">
 <title>AI Music Video</title>
 <style>
 :root{
@@ -297,6 +300,41 @@ html,body{
 }
 .done-hint.show{opacity:1}
 
+/* 全屏引导弹窗 */
+.fs-guide{
+  position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .3s;
+}
+.fs-guide-content{
+  width:85%;max-width:320px;background:#1a1a1e;border-radius:16px;
+  padding:24px 20px 20px;position:relative;
+  border:1px solid rgba(255,255,255,.08);
+}
+.fs-guide-close{
+  position:absolute;top:12px;right:14px;color:rgba(255,255,255,.3);
+  font-size:18px;cursor:pointer;width:32px;height:32px;display:flex;
+  align-items:center;justify-content:center;border-radius:50%;
+  -webkit-tap-highlight-color:transparent;
+}
+.fs-guide-close:active{background:rgba(255,255,255,.1);color:#fff}
+.fs-guide-icon{font-size:48px;text-align:center;margin-bottom:6px}
+.fs-guide-title{color:#fff;font-size:18px;font-weight:600;text-align:center;margin-bottom:16px}
+.fs-guide-step{
+  display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.7);
+  font-size:14px;line-height:1.6;padding:6px 0;
+}
+.fs-guide-step span{
+  width:22px;height:22px;border-radius:50%;background:var(--accent);
+  color:#fff;font-size:12px;font-weight:600;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;
+}
+.fs-guide-step b{color:#fff;font-weight:600}
+.fs-guide-note{
+  color:rgba(255,255,255,.2);font-size:11px;text-align:center;
+  margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);
+}
+
 /* 隐藏元素 */
 #fileCover,#fileBg,#fileDisc{display:none}
 #expCanvas{display:none}
@@ -344,7 +382,7 @@ html,body{
   </button>
   <span class="spacer"></span>
   <button class="btn-play" id="btnPlay" onclick="startPlay()">▶</button>
-  <button class="btn-fs" onclick="goFullscreen()">⛶</button>
+  <button class="btn-fs" onclick="showFsGuide()">⤢</button>
 </div>
 
 <!-- ====== 倒计时 ====== -->
@@ -462,6 +500,20 @@ var userImages={cover:null,bg:null,disc:null};
 
 // ===== 初始化 =====
 loadConfig(); applyConfig(); initParticles(); initWaveform();
+
+// ===== iOS Safari 地址栏隐藏技巧 =====
+// 让 body 略微超出视口，自动滚 1px 触 Safari 发隐藏地址栏
+(function(){
+  var html=document.documentElement;
+  html.style.minHeight=(window.innerHeight+1)+'px';
+  setTimeout(function(){window.scrollTo(0,1)},200);
+  // 用户点击时如果页面没滚动过，再触发一次
+  var scrolled=false;
+  window.addEventListener('scroll',function(){scrolled=true});
+  document.addEventListener('touchstart',function(){
+    if(!scrolled)setTimeout(function(){window.scrollTo(0,1)},50);
+  },{once:true});
+})();
 
 // ===== 粒子 =====
 function initParticles(){
@@ -607,12 +659,17 @@ function closeDrawer(){
   document.getElementById('backdrop').classList.remove('open');
 }
 
-// ===== 全屏 =====
-function goFullscreen(){
-  var el=document.documentElement;
-  if(el.requestFullscreen)el.requestFullscreen();
-  else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
-  showToast('已全屏 · 下拉控制中心开始录屏');
+// ===== 全屏引导（iOS Safari 不支持网页全屏API，需添加到主屏幕） =====
+function showFsGuide(){
+  closeDrawer();
+  var guide=document.getElementById('fsGuide');
+  if(!guide){
+    guide=document.createElement('div');guide.id='fsGuide';
+    guide.className='fs-guide';
+    guide.innerHTML='<div class="fs-guide-content"><div class="fs-guide-close" onclick="document.getElementById(\'fsGuide\').remove()">✕</div><div class="fs-guide-icon">📲</div><div class="fs-guide-title">全屏播放</div><div class="fs-guide-step"><span>1</span> 点底部中间 <b>分享</b> 按钮</div><div class="fs-guide-step"><span>2</span> 往下滑找到 <b>添加到主屏幕</b></div><div class="fs-guide-step"><span>3</span> 点右上角 <b>添加</b></div><div class="fs-guide-step"><span>4</span> 从主屏幕打开 = 真全屏 🎉</div><div class="fs-guide-note">添加一次，以后都全屏</div></div>';
+    document.body.appendChild(guide);
+  }
+  setTimeout(function(){guide.style.opacity='1'},50);
 }
 
 // ===== 录屏教程 =====
