@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>技承黔绣 · 布依绣文化线上展厅</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root{--paper:#f5f0e3;--ink:#232323;--soft:rgba(35,35,35,.62);--line:rgba(35,35,35,.16);--indigo:#1f3d5e;--crimson:#9c2b23;--gold:#b39c4f}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:"Noto Serif SC",serif;line-height:1.9}
+a{color:inherit;text-decoration:none}img{display:block;max-width:100%}
+.site-head{position:fixed;inset:0 0 auto;z-index:9;display:flex;justify-content:space-between;align-items:center;height:72px;padding:0 4vw;background:rgba(245,240,227,.92);border-bottom:1px solid var(--line)}
+.seal{width:38px;height:38px;background:var(--crimson);color:#fff;display:grid;place-items:center;font-weight:900;margin-right:10px}
+.brand{display:flex;align-items:center;letter-spacing:.2em}
+nav a{margin-left:16px;font-size:14px;letter-spacing:.14em}
+nav a.on{border-bottom:2px solid var(--crimson);font-weight:700}
+.home{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+.home-visual{background:#14283f} .home-visual img{width:100%;height:100%;object-fit:cover}
+.home-main{padding:120px 6vw 40px}
+.home-title{font-size:clamp(44px,7vw,88px);font-weight:900;letter-spacing:.08em}
+.home-title em{font-style:normal;color:var(--indigo)}
+.tagline{border-left:4px solid var(--crimson);padding-left:12px;color:var(--soft);margin:12px 0 28px}
+.cat{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.cat .no{color:var(--gold);font-family:Georgia,serif}
+.page{padding:100px 6vw 40px} .work{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;padding:22px 0;border-top:1px solid var(--line)}
+.ph img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#14283f}
+.theme-dark{background:#10141c;color:#ece5d2}
+@media(max-width:800px){.home,.work{grid-template-columns:1fr}nav{display:none}.home-visual{height:40vh}}
+</style></head>
+<body>
+<header class="site-head"><a class="brand" href="#home"><span class="seal">黔</span>技承黔绣</a>
+<nav>
+<a href="#home" data-p="home" class="on">首页</a>
+<a href="#about" data-p="about">简介</a>
+<a href="#animal" data-p="animal">动物</a>
+<a href="#plant" data-p="plant">植物</a>
+<a href="#myth" data-p="myth">神话</a>
+<a href="#pattern" data-p="pattern">花纹</a>
+<a href="#product" data-p="product">文创</a>
+</nav></header>
+<div id="app"></div>
+<script>
+const CDN="https://cdn.jsdelivr.net/gh/liujiangchao57-svg/qianwen-buyi-sites@main/img/";
+const img=n=>CDN+n;
+function works(title,desc,arr){
+ return `<main class="page"><h1>${title}</h1><p style="color:#666;max-width:640px">${desc}</p>`+arr.map(([f,n,t])=>`<article class="work"><div class="ph"><img src="${img(f)}"></div><div><h3>${n}</h3><p>${t}</p></div></article>`).join("")+`</main>`;
+}
+const PAGES={
+home:`<main class="home"><div class="home-visual"><img src="${img('about-cloth.svg')}"></div><div class="home-main"><p style="letter-spacing:.4em;color:#666">布依绣文化线上展厅</p><h1 class="home-title">技承<em>黔</em>绣</h1><p class="tagline">一针一线，绣见黔地千年文化。</p>
+<a class="cat" href="#about"><span class="no">01</span>布依绣简介</a>
+<a class="cat" href="#animal"><span class="no">02</span>动物类</a>
+<a class="cat" href="#plant"><span class="no">03</span>植物类</a>
+<a class="cat" href="#myth"><span class="no">04</span>神话类</a>
+<a class="cat" href="#pattern"><span class="no">05</span>花纹类</a>
+<a class="cat" href="#product"><span class="no">06</span>文创产品</a></div></main>`,
+about:`<main class="page"><h1>布依绣简介</h1><p>以靛染土布为底、彩丝为墨。平针铺色、锁绣勾边、打籽点睛、挑花取格。菱形骨架统摄全局。</p><div class="ph" style="max-width:520px;margin-top:24px"><img src="${img('about-cloth.svg')}"></div></main>`,
+animal:works("动物类布依绣","蝶、鸟、鱼、龙",[["animal-butterfly.svg","彩蝶纹","变化与姻缘"],["animal-fish.svg","双鱼纹","有余与成双"],["animal-bird.svg","喜鹊纹","节庆构图"],["animal-dragon.svg","蛟龙纹","仪式绣面"]]),
+plant:works("植物类布依绣","花草藤蔓",[["plant-lotus.svg","莲花纹","清正与生长"],["plant-pomegranate.svg","石榴纹","多子兴旺"]]),
+myth:works("神话类布依绣","可穿戴的史诗",[["myth-sunbird.svg","太阳鸟","节庆肩头"],["about-cloth.svg","开天地纹","中心菱石"]]),
+pattern:works("花纹类布依绣","几何里的秩序",[["pat-diamond.svg","菱形骨架","构图母型"],["pat-huiwen.svg","回纹","边框"],["pat-wave.svg","水波纹","盘江记忆"],["pat-wan.svg","万字纹","长久"],["pat-cloud.svg","云纹","如意"],["pat-thunder.svg","云雷纹","护佑"]]),
+product:works("布依绣文创","走进日常",[["prod-bag.svg","菱花挎包","围腰菱心"],["pat-wan.svg","万字书签","小物件"]])
+};
+function go(){const id=(location.hash||"#home").slice(1)||"home";document.getElementById("app").innerHTML=PAGES[id]||PAGES.home;document.body.classList.toggle("theme-dark",id==="myth");document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.p===id));window.scrollTo(0,0)}
+window.addEventListener("hashchange",go);go();
+</script></body></html>
